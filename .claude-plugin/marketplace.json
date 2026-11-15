@@ -1,0 +1,17 @@
+{
+  "name": "ploten",
+  "owner": {
+    "name": "Ploten",
+    "email": "hello@ploten.dev"
+  },
+  "metadata": {
+    "description": "Ploten, the live report MCP for Power BI Desktop."
+  },
+  "plugins": [
+    {
+      "name": "ploten",
+      "source": "./",
+      "description": "Claude Code or Codex edits the Power BI report you have open in Desktop. Your unsaved work stays."
+    }
+  ]
+}

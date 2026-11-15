@@ -1,0 +1,32 @@
+{
+  "name": "@ploten/ploten-powerbi",
+  "version": "1.0.0",
+  "description": "Starts Ploten, the live report MCP for Power BI Desktop. Install Ploten from ploten.dev first.",
+  "mcpName": "io.github.ploten-team/ploten-powerbi",
+  "type": "module",
+  "bin": {
+    "ploten-powerbi": "bin/start.mjs"
+  },
+  "files": [
+    "bin/start.mjs"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT",
+  "author": "Ploten <hello@ploten.dev> (https://ploten.dev)",
+  "homepage": "https://ploten.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ploten-team/ploten-powerbi.git"
+  },
+  "keywords": [
+    "mcp",
+    "power-bi",
+    "powerbi",
+    "dax",
+    "pbip",
+    "report",
+    "windows"
+  ]
+}

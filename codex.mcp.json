@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "ploten": {
+      "command": "node",
+      "args": ["./bin/start.mjs"],
+      "cwd": "."
+    }
+  }
+}
