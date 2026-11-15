@@ -14,7 +14,7 @@ Website: https://ploten.dev
 
 ## What this repository is
 
-This repository holds a launcher of about 130 lines, not Ploten itself. Ploten is a separate, paid program. Its installer puts it on your PC, in `%LOCALAPPDATA%\Ploten`.
+This repository holds a launcher of about 140 lines, not Ploten itself. Ploten is a separate, paid program. Its installer puts it on your PC, in `%LOCALAPPDATA%\Ploten`.
 
 The launcher is [`bin/start.mjs`](bin/start.mjs). When your agent starts it, it does one of three things:
 
@@ -22,7 +22,7 @@ The launcher is [`bin/start.mjs`](bin/start.mjs). When your agent starts it, it 
 2. Ploten is installed. The launcher starts `%LOCALAPPDATA%\Ploten\launcher\ploten-mcp.mjs` with the same Node, with no shell, and passes stdin and stdout through. That file is the installer's own launcher. It starts the Ploten version that the installer set.
 3. Claude Code already starts Ploten from the installer's own entry `ploten`. The launcher then gives no tools, so your agent does not see each Power BI tool twice.
 
-The launcher has no dependencies and no install script. It reads no licence key, downloads nothing and writes no file. It reads two places only: the Ploten folder, to see if the launcher file is there, and Claude Code's settings file `.claude.json`, to see if the entry `ploten` is there.
+The launcher has no dependencies and no install script. It reads no licence key, downloads nothing and writes no file. It reads two places only: the Ploten folder, to see if the launcher file is there, and Claude Code's settings file (`.claude.json`), to see if the entry `ploten` is there.
 
 ## Install
 

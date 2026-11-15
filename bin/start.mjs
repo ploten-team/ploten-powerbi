@@ -11,7 +11,7 @@
 // It reads no licence key, downloads nothing and writes no file.
 
 import { spawn } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
@@ -39,13 +39,25 @@ function plotenFolder(env) {
 }
 
 // Claude Code sets CLAUDE_PLUGIN_ROOT for a plugin's server. The installer adds its entry at user scope, which
-// Claude Code keeps in .claude.json, under the top-level "mcpServers" (in CLAUDE_CONFIG_DIR when that is set).
+// Claude Code keeps under the top-level "mcpServers" of its settings file: .claude.json in CLAUDE_CONFIG_DIR or the
+// home folder, or an older .config.json (in CLAUDE_CONFIG_DIR or ~/.claude) when that file has text.
+function claudeCodeSettingsFile(env) {
+  const configDir = env.CLAUDE_CONFIG_DIR;
+  const home = os.homedir();
+  const older = path.join(configDir || path.join(home, ".claude"), ".config.json");
+  try {
+    if (statSync(older).size > 0) return older;
+  } catch {
+    // No older file.
+  }
+  return path.join(configDir || home, ".claude.json");
+}
+
 function claudeCodeHasInstalledEntry(env) {
   if (!env.CLAUDE_PLUGIN_ROOT) return false;
-  const folder = env.CLAUDE_CONFIG_DIR?.trim() || os.homedir();
   try {
-    const settings = JSON.parse(readFileSync(path.join(folder, ".claude.json"), "utf8"));
-    const servers = settings?.mcpServers;
+    const text = readFileSync(claudeCodeSettingsFile(env), "utf8").replace(/^\uFEFF/u, "");
+    const servers = JSON.parse(text)?.mcpServers;
     return typeof servers === "object" && servers !== null && Object.hasOwn(servers, SERVER_NAME);
   } catch {
     return false;

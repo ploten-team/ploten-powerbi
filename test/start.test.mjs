@@ -149,6 +149,33 @@ test("3b. Claude Code settings file that is not JSON: hands over (never leaves t
   assert.ok(existsSync(mark));
 });
 
+test("3c. two entries, Claude Code settings file starts with a byte order mark: still off", async () => {
+  const { folder, mark } = fakeInstall();
+  const settings = tempFolder();
+  writeFileSync(path.join(settings, ".claude.json"), `\uFEFF${JSON.stringify({ mcpServers: { ploten: { command: "node" } } })}`);
+  const result = await run({ PLOTEN_LOCAL_STATE_DIR: folder, CLAUDE_PLUGIN_ROOT: root, CLAUDE_CONFIG_DIR: settings }, [initialize]);
+  assert.equal(result.lines[0].result.instructions, ALREADY_RUNS);
+  assert.equal(existsSync(mark), false);
+});
+
+test("3d. two entries in the older Claude Code settings file .config.json (it wins when it has text): off", async () => {
+  const { folder, mark } = fakeInstall();
+  const settings = claudeSettings({ other: { command: "node" } });
+  writeFileSync(path.join(settings, ".config.json"), JSON.stringify({ mcpServers: { ploten: { command: "node" } } }));
+  const result = await run({ PLOTEN_LOCAL_STATE_DIR: folder, CLAUDE_PLUGIN_ROOT: root, CLAUDE_CONFIG_DIR: settings }, [initialize]);
+  assert.equal(result.lines[0].result.instructions, ALREADY_RUNS);
+  assert.equal(existsSync(mark), false);
+});
+
+test("3e. an empty older .config.json: .claude.json decides (no entry there: hands over)", async () => {
+  const { folder, mark } = fakeInstall();
+  const settings = claudeSettings({ other: { command: "node" } });
+  writeFileSync(path.join(settings, ".config.json"), "");
+  const result = await run({ PLOTEN_LOCAL_STATE_DIR: folder, CLAUDE_PLUGIN_ROOT: root, CLAUDE_CONFIG_DIR: settings }, ["v"]);
+  assert.equal(result.code, 7);
+  assert.ok(existsSync(mark));
+});
+
 test("4. no shell: one spawn, of this same Node, with shell off; no other way to start a program", () => {
   const code = source.replace(/^\s*\/\/.*$/gmu, "");
   assert.equal(code.match(/\bspawn\(/gu)?.length, 1);
