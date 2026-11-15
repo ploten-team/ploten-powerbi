@@ -12,7 +12,7 @@ import { fileURLToPath } from "node:url";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const shim = path.join(root, "bin", "start.mjs");
-const source = readFileSync(shim, "utf8");
+const source = readFileSync(shim, "utf8").replace(/\r\n/gu, "\n");
 const readJson = (file) => JSON.parse(readFileSync(path.join(root, file), "utf8"));
 
 const NOT_INSTALLED =
@@ -26,9 +26,8 @@ function tempFolder() {
 
 // A Ploten folder with a fake launcher. The fake echoes its first stdin line and two env values, writes a mark file,
 // and exits with code 7.
-function fakeInstall() {
-  const folder = tempFolder();
-  mkdirSync(path.join(folder, "launcher"));
+function fakeInstall(folder = tempFolder()) {
+  mkdirSync(path.join(folder, "launcher"), { recursive: true });
   const mark = path.join(folder, "started.mark");
   writeFileSync(
     path.join(folder, "launcher", "ploten-mcp.mjs"),
@@ -58,7 +57,7 @@ function run(env, lines) {
   return new Promise((resolve, reject) => {
     const home = tempFolder();
     const child = spawn(process.execPath, [shim], {
-      env: { PATH: process.env.PATH, HOME: home, USERPROFILE: home, ...env },
+      env: { PATH: process.env.PATH, SystemRoot: process.env.SystemRoot, HOME: home, USERPROFILE: home, ...env },
       stdio: ["pipe", "pipe", "pipe"],
     });
     let out = "";
@@ -75,7 +74,7 @@ function run(env, lines) {
 const initialize = { jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "cell", version: "0" } } };
 const initialized = { jsonrpc: "2.0", method: "notifications/initialized" };
 const list = { jsonrpc: "2.0", id: 2, method: "tools/list" };
-const call = { jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "ploten_install", arguments: {} } };
+const call = { jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "ploten_install_help", arguments: {} } };
 
 test("1. installed: hands over to the installed launcher, passes stdin and stdout, keeps its exit code", async () => {
   const { folder, mark } = fakeInstall();
@@ -117,7 +116,7 @@ test("2. not installed: answers with the install line, one tool, and ends when s
   assert.equal(init.result.protocolVersion, "2025-06-18");
   assert.equal(init.result.serverInfo.name, "ploten");
   assert.equal(init.result.instructions, NOT_INSTALLED);
-  assert.deepEqual(tools.result.tools.map((tool) => tool.name), ["ploten_install"]);
+  assert.deepEqual(tools.result.tools.map((tool) => tool.name), ["ploten_install_help"]);
   assert.ok(tools.result.tools[0].description.startsWith(NOT_INSTALLED));
   assert.deepEqual(called.result, { content: [{ type: "text", text: NOT_INSTALLED }], isError: true });
   assert.equal(parseError.error.code, -32700);
@@ -174,6 +173,41 @@ test("3e. an empty older .config.json: .claude.json decides (no entry there: han
   const result = await run({ PLOTEN_LOCAL_STATE_DIR: folder, CLAUDE_PLUGIN_ROOT: root, CLAUDE_CONFIG_DIR: settings }, ["v"]);
   assert.equal(result.code, 7);
   assert.ok(existsSync(mark));
+});
+
+const onWindows = { skip: process.platform !== "win32" && "the Windows folder rule runs only on Windows" };
+
+test("W1. Windows: LOCALAPPDATA is a drive path: the launcher in <LOCALAPPDATA>\\Ploten starts", onWindows, async () => {
+  const local = tempFolder();
+  const { mark } = fakeInstall(path.join(local, "Ploten"));
+  const result = await run({ LOCALAPPDATA: local }, ["a"]);
+  assert.equal(result.code, 7);
+  assert.ok(existsSync(mark));
+});
+
+test("W2. Windows: no LOCALAPPDATA: the launcher in <home>\\AppData\\Local\\Ploten starts", onWindows, async () => {
+  const home = tempFolder();
+  const { mark } = fakeInstall(path.join(home, "AppData", "Local", "Ploten"));
+  const result = await run({ HOME: home, USERPROFILE: home }, ["b"]);
+  assert.equal(result.code, 7);
+  assert.ok(existsSync(mark));
+});
+
+test("W3. Windows: LOCALAPPDATA is not a full path: it counts as missing, the home rule decides", onWindows, async () => {
+  const home = tempFolder();
+  const { mark } = fakeInstall(path.join(home, "AppData", "Local", "Ploten"));
+  const result = await run({ HOME: home, USERPROFILE: home, LOCALAPPDATA: "relative\\folder" }, ["c"]);
+  assert.equal(result.code, 7);
+  assert.ok(existsSync(mark));
+});
+
+test("W4. Windows: LOCALAPPDATA is a share path: the share is used, not the home rule", onWindows, async () => {
+  const home = tempFolder();
+  const { mark } = fakeInstall(path.join(home, "AppData", "Local", "Ploten"));
+  const share = "\\\\localhost\\ploten-cell-no-such-share";
+  const result = await run({ HOME: home, USERPROFILE: home, LOCALAPPDATA: share }, [initialize]);
+  assert.equal(result.lines[0].result.instructions, NOT_INSTALLED);
+  assert.equal(existsSync(mark), false);
 });
 
 test("4. no shell: one spawn, of this same Node, with shell off; no other way to start a program", () => {

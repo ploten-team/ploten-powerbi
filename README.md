@@ -22,7 +22,9 @@ The launcher is [`bin/start.mjs`](bin/start.mjs). When your agent starts it, it 
 2. Ploten is installed. The launcher starts `%LOCALAPPDATA%\Ploten\launcher\ploten-mcp.mjs` with the same Node, with no shell, and passes stdin and stdout through. That file is the installer's own launcher. It starts the Ploten version that the installer set.
 3. Claude Code already starts Ploten from the installer's own entry `ploten`. The launcher then gives no tools, so your agent does not see each Power BI tool twice.
 
-The launcher has no dependencies and no install script. It reads no licence key, downloads nothing and writes no file. It reads two places only: the Ploten folder, to see if the launcher file is there, and Claude Code's settings file (`.claude.json`), to see if the entry `ploten` is there.
+The launcher has no dependencies and no install script. It reads no licence key, downloads nothing and writes no file. It reads two places only: the Ploten folder, to see if the launcher file is there, and Claude Code's settings file (`.claude.json`, or the older `.config.json` when that file has text), to see if the entry `ploten` is there.
+
+The launcher sets one value for the program that it starts: `PBI_COMPANION_MODEL_ADAPTER=1`, which turns on changes to the data model (as the installer's own entry does). It sets it only when your environment does not set it. If you installed Ploten with `--no-model-writes`, set the Windows user variable `PBI_COMPANION_MODEL_ADAPTER` to `0` and restart your agent: Ploten makes model changes only when the value is `1`.
 
 ## Install
 

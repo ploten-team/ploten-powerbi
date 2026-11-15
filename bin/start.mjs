@@ -120,7 +120,7 @@ const launcher = folder ? path.join(folder, "launcher", "ploten-mcp.mjs") : null
 if (!launcher || !existsSync(launcher)) {
   answerWithLine(NOT_INSTALLED, [
     {
-      name: "ploten_install",
+      name: "ploten_install_help",
       description: `${NOT_INSTALLED} Call this tool when the user asks for Power BI report work, and give the user this line.`,
       inputSchema: { type: "object", properties: {} },
     },
