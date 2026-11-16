@@ -15,7 +15,7 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-const VERSION = "1.0.0";
+const VERSION = "1.0.1";
 const SERVER_NAME = "ploten";
 const NOT_INSTALLED =
   "Ploten is not installed on this PC. Install it from https://ploten.dev/install, then restart your agent.";
