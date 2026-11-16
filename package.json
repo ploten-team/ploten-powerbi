@@ -1,6 +1,6 @@
 {
   "name": "@ploten/ploten-powerbi",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Starts Ploten, the live report MCP for Power BI Desktop. Install Ploten from ploten.dev first.",
   "mcpName": "io.github.ploten-team/ploten-powerbi",
   "type": "module",
