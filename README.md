@@ -1,14 +1,21 @@
 # Ploten: live report MCP for Power BI Desktop
 
-Claude Code or Codex edits the Power BI report you have open in Desktop. Your unsaved work stays.
+Claude Code or Codex edits the Power BI report you have open in Desktop.
 
-Ploten is the live report MCP for Power BI Desktop. It connects Claude Code or Codex to the report you have open. You ask, and the canvas updates.
+Ploten works in the report you have open, unlike file-based agents that edit the project files and wait for Desktop to reload them. You ask, and the change happens live on the canvas. Your unsaved work stays. Change something by hand, then ask your agent for the next step. You and your agent work in the same report.
 
-- Builds and edits report pages in the open report, with no save-and-reload loop. Your unsaved work stays.
-- Writes the DAX measure, then the visual that uses it.
-- Styles every new visual from one design system you can change.
+## What your agent can do with Ploten
 
-Needs Windows 10 or 11, Power BI Desktop (June 2026 or later), Node.js 22 or later, a report saved as a Power BI project (PBIP), and Claude Code or Codex. Free for 14 days. Then $19 a month. (The trial asks for a card.)
+- Build a page from one sentence. Your agent reads your model, so you paste no table names.
+- Write a DAX measure, check it, then build the visual that uses it.
+- Add a date table with month, quarter and year to date measures.
+- Style every new visual from a design system you can change. Ask for blue-9 and you get that exact shade.
+- Switch Ploten's light and dark themes in one ask.
+- Group visuals into a card, sync a slicer to another page, and add bookmarks with buttons.
+
+Ploten runs on your PC, next to Power BI Desktop. It sends no report content, data or model to Ploten. Microsoft's Power BI Authoring MCP Server makes the model changes, and Ploten's installer can set it up.
+
+Needs Windows 10 or 11, Power BI Desktop (June 2026 or later), Node.js 22 or later, a report saved as a Power BI project (PBIP), and Claude Code or Codex. Free to try for 14 days.
 
 Website: https://ploten.dev
 
