@@ -1,7 +1,7 @@
 {
   "name": "ploten",
   "version": "1.0.0",
-  "description": "Claude Code edits the Power BI report you have open in Desktop. This plugin shows Claude how to install Ploten on your PC.",
+  "description": "Ploten is a report MCP server for Power BI Desktop. Claude Code edits the report you have open, live, with no save and no reload. This plugin guides the Ploten install.",
   "author": {
     "name": "Ploten",
     "email": "hello@ploten.dev",
