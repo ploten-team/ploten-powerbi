@@ -1,0 +1,14 @@
+{
+  "name": "ploten",
+  "version": "1.0.0",
+  "description": "Claude Code edits the Power BI report you have open in Desktop. This plugin shows Claude how to install Ploten on your PC.",
+  "author": {
+    "name": "Ploten",
+    "email": "hello@ploten.dev",
+    "url": "https://ploten.dev"
+  },
+  "homepage": "https://ploten.dev",
+  "repository": "https://github.com/ploten-team/ploten-powerbi",
+  "license": "MIT",
+  "keywords": ["power-bi", "powerbi", "dax", "pbip", "report", "windows"]
+}
